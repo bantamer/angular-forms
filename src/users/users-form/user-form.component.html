@@ -1,0 +1,81 @@
+<form
+  [formGroup]="userForm"
+  #formDirective="ngForm"
+  (ngSubmit)="onSubmit(formDirective)"
+  class="user-form"
+>
+  <mat-form-field>
+    <mat-label>First Name</mat-label>
+    <input
+      placeholder="Jon"
+      matInput
+      formControlName="firstName"
+      [errorStateMatcher]="matcher"
+    />
+    @if(userForm.get('firstName')?.hasError('required')){
+    <mat-error>First Name is required</mat-error>
+    } @if(userForm.get('firstName')?.hasError('minlength')){
+    <mat-error
+      >First Name must be at least
+      {{
+      userForm.get('firstName')?.errors?.['minlength'].requiredLength
+      }}
+      characters.</mat-error
+    >
+    }
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Last Name</mat-label>
+    <input
+      placeholder="Doe"
+      matInput
+      formControlName="lastName"
+      [errorStateMatcher]="matcher"
+    />
+    @if(userForm.get('lastName')?.hasError('required')){
+    <mat-error>Last Name is required</mat-error>
+    } @if(userForm.get('lastName')?.hasError('minlength')){
+    <mat-error
+      >Last Name must be at least
+      {{
+        userForm.get('lastName')?.errors?.['minlength'].requiredLength
+      }}
+      characters.</mat-error
+    >
+    }
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Birth Day</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      formControlName="birthDayAt"
+      placeholder="MM/DD/YYYY"
+      [errorStateMatcher]="matcher"
+    />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    @if(userForm.get('birthDayAt')?.hasError('required') &&
+    !userForm.get('birthDayAt')?.hasError('matDatepickerParse')){
+    <mat-error>Birthday is required</mat-error>
+    } @if(userForm.get('birthDayAt')?.hasError('matDatepickerParse')){
+    <mat-error>Please enter a valid date in the MM/DD/YYYY format.</mat-error>
+    }@if(userForm.get('birthDayAt')?.hasError('dateOutOfRange')){
+    <mat-error
+      >Date must be between
+      {{
+        userForm.get("birthDayAt")?.getError("dateOutOfRange")?.minDate
+          | date : "MM/dd/yyyy"
+      }}
+      and
+      {{
+        userForm.get("birthDayAt")?.getError("dateOutOfRange")?.maxDate
+          | date : "MM/dd/yyyy"
+      }}.</mat-error
+    >
+    }
+  </mat-form-field>
+  <button mat-raised-button type="submit" [disabled]="!userForm.valid">
+    Submit
+  </button>
+</form>
