@@ -8,8 +8,8 @@ import { UserTableComponent } from './users-table/user-table.component';
   standalone: true,
   imports: [UserFormComponent, UserTableComponent],
   template: `
-    <user-form />
-    <user-table />
+    <app-user-form />
+    <app-user-table />
   `,
 })
 export class HomeComponent {}

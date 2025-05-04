@@ -2,16 +2,16 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject, viewChild } from '@angular/core';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { User, UserField } from '../users-service/user';
+import { User, UserField } from 'users/users-service/user';
 import { MatIcon } from '@angular/material/icon';
 import { getSortType, SortType } from './users-table-sort/get-sort-type';
 import { Order } from './users-table-sort/types';
 import { sortDate } from './users-table-sort/sort-data';
 import { sortDefault } from './users-table-sort/sort-default';
 import { MatButtonModule } from '@angular/material/button';
-import { UsersService } from '../users-service';
+import { UsersService } from 'users/users-service';
 
-const usersGridComporator = (data: User[], sort: MatSort) => {
+const usersGridComparator = (data: User[], sort: MatSort) => {
   const isAsc = sort.direction === Order.Asc;
   const key = sort.active as UserField;
 
@@ -32,7 +32,7 @@ const usersGridComporator = (data: User[], sort: MatSort) => {
 };
 
 @Component({
-  selector: 'user-table',
+  selector: 'app-user-table',
   standalone: true,
   imports: [MatTableModule, MatSortModule, DatePipe, MatIcon, MatButtonModule],
   templateUrl: './user-table.component.html',
@@ -55,7 +55,7 @@ export class UserTableComponent {
     const source = new MatTableDataSource<User>(users());
 
     source.sort = sort ?? null;
-    source.sortData = usersGridComporator;
+    source.sortData = usersGridComparator;
 
     return source;
   });

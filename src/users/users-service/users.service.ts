@@ -7,8 +7,6 @@ import { User } from './user';
 export class UsersService {
   private users = signal<User[]>([]);
 
-  constructor() {}
-
   getUsersSignal() {
     return this.users.asReadonly();
   }

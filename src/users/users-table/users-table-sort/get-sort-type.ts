@@ -3,12 +3,9 @@ export const enum SortType {
   Default = 'default',
 }
 
-export const getSortType = <
-  T extends string,
-  K extends Array<Record<T, unknown>>
->(
+export const getSortType = <T extends string, K extends Record<T, unknown>[]>(
   data: K,
-  key: T
+  key: T,
 ): SortType => {
   const fieldValue = data[0][key];
 
