@@ -17,12 +17,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { DatePipe } from '@angular/common';
 import { dateInRangeValidator } from './users-form-validators/date-in-range.validator';
-import { UsersService } from '../users-service/users.service';
+import { UsersService } from 'users/users-service/users.service';
 
 export class UserFormErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: FormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(
@@ -34,7 +34,7 @@ export class UserFormErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'user-form',
+  selector: 'app-user-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
