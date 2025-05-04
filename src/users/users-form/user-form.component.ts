@@ -1,7 +1,4 @@
-import {
-  Component,
-  inject,
-} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormGroup,
   Validators,
@@ -49,10 +46,9 @@ export class UserFormErrorStateMatcher implements ErrorStateMatcher {
     DatePipe,
   ],
   templateUrl: './user-form.component.html',
-  styleUrl: './user-form.component.css',
 })
 export class UserFormComponent {
-  private users = inject(UsersService)
+  private users = inject(UsersService);
   readonly matcher = new UserFormErrorStateMatcher();
 
   readonly userForm = new FormGroup({
@@ -71,17 +67,13 @@ export class UserFormComponent {
     ]),
   });
 
-
-
-
   onSubmit(formDirective: FormGroupDirective) {
     this.users.addUser({
       uuid: uuidv4(),
       firstName: this.userForm.value['firstName'] ?? '',
       lastName: this.userForm.value['lastName'] ?? '',
       birthDayAt: this.userForm.value['birthDayAt'] ?? new Date(),
-    })
-
+    });
 
     formDirective.resetForm();
     this.userForm.reset();

@@ -1,9 +1,7 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { MatTableDataSource } from '@angular/material/table';
 import { UserFormComponent } from './users-form/user-form.component';
 import { UserTableComponent } from './users-table/user-table.component';
-import { User } from './users-service/user';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +11,5 @@ import { User } from './users-service/user';
     <user-form />
     <user-table />
   `,
-  styleUrl: './users.component.css',
 })
 export class HomeComponent {}

@@ -1,12 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  computed,
-  inject,
-  viewChild,
-  ViewChild,
-} from '@angular/core';
+import { Component, computed, inject, viewChild } from '@angular/core';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { User, UserField } from '../users-service/user';
@@ -43,7 +36,6 @@ const usersGridComporator = (data: User[], sort: MatSort) => {
   standalone: true,
   imports: [MatTableModule, MatSortModule, DatePipe, MatIcon, MatButtonModule],
   templateUrl: './user-table.component.html',
-  styleUrl: './user-table.component.css',
 })
 export class UserTableComponent {
   private users = inject(UsersService);
