@@ -2,9 +2,9 @@
   [formGroup]="userForm"
   #formDirective="ngForm"
   (ngSubmit)="onSubmit(formDirective)"
-  class="flex flex-col p-4 gap-4"
+  class="flex p-4 gap-4"
 >
-  <mat-form-field>
+  <mat-form-field class="flex-grow">
     <mat-label>First Name</mat-label>
     <input
       placeholder="Jon"
@@ -23,7 +23,7 @@
       >
     }
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field class="flex-grow">
     <mat-label>Last Name</mat-label>
     <input
       placeholder="Doe"
@@ -42,7 +42,7 @@
       >
     }
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field class="flex-grow">
     <mat-label>Birth Day</mat-label>
     <input
       matInput

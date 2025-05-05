@@ -45,9 +45,9 @@ export class UserFormErrorStateMatcher implements ErrorStateMatcher {
     MatButtonModule,
     DatePipe,
   ],
-  templateUrl: './user-form.component.html',
+  templateUrl: './users-form.component.html',
 })
-export class UserFormComponent {
+export class UsersFormComponent {
   private users = inject(UsersService);
   readonly matcher = new UserFormErrorStateMatcher();
 
