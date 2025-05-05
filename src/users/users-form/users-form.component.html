@@ -1,0 +1,42 @@
+<form
+  [formGroup]="userForm"
+  #formDirective="ngForm"
+  (ngSubmit)="onSubmit(formDirective)"
+  class="flex p-4 gap-4"
+>
+  <app-user-form-text-input
+    class="flex-grow"
+    controlName="firstName"
+    label="First Name"
+    placeholder="Jon"
+    [control]="userForm.controls.firstName"
+  />
+  <app-user-form-text-input
+    class="flex-grow"
+    controlName="lastName"
+    label="Last Name"
+    placeholder="Doe"
+    [control]="userForm.controls.lastName"
+  />
+  <mat-form-field class="flex-grow">
+    <mat-label>Birth Day</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      formControlName="birthDayAt"
+      placeholder="MM/DD/YYYY"
+    />
+    <mat-datepicker-toggle matSuffix [for]="picker" />
+    <mat-datepicker #picker />
+    <mat-error>
+      <app-users-form-input-error
+        [errors]="userForm.controls.birthDayAt.errors"
+        [isTouched]="userForm.controls.birthDayAt.touched"
+        [isDirty]="userForm.controls.birthDayAt.dirty"
+      />
+    </mat-error>
+  </mat-form-field>
+  <button mat-raised-button type="submit" [disabled]="!userForm.valid">
+    Submit
+  </button>
+</form>

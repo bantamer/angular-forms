@@ -35,9 +35,9 @@ const usersGridComparator = (data: User[], sort: MatSort) => {
   selector: 'app-user-table',
   standalone: true,
   imports: [MatTableModule, MatSortModule, DatePipe, MatIcon, MatButtonModule],
-  templateUrl: './user-table.component.html',
+  templateUrl: './users-table.component.html',
 })
-export class UserTableComponent {
+export class UsersTableComponent {
   private users = inject(UsersService);
 
   displayedColumns: string[] = [

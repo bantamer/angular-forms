@@ -1,37 +1,22 @@
 import { Component, inject } from '@angular/core';
 import {
-  FormGroup,
   Validators,
   ReactiveFormsModule,
-  FormControl,
   FormGroupDirective,
-  NgForm,
+  NonNullableFormBuilder,
 } from '@angular/forms';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { ErrorStateMatcher, MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { v4 as uuidv4 } from 'uuid';
 
-import { DatePipe } from '@angular/common';
 import { dateInRangeValidator } from './users-form-validators/date-in-range.validator';
 import { UsersService } from 'users/users-service/users.service';
-
-export class UserFormErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(
-    control: FormControl | null,
-    form: FormGroupDirective | NgForm | null,
-  ): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(
-      control &&
-      control.invalid &&
-      (control.dirty || control.touched || isSubmitted)
-    );
-  }
-}
+import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
+import { UsersFormInputErrorComponent } from './users-from-input-error/users-from-input-error.component';
 
 @Component({
   selector: 'app-user-form',
@@ -43,28 +28,26 @@ export class UserFormErrorStateMatcher implements ErrorStateMatcher {
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
-    DatePipe,
+    UsersFormTextInputComponent,
+    UsersFormInputErrorComponent,
   ],
-  templateUrl: './user-form.component.html',
+  templateUrl: './users-form.component.html',
 })
-export class UserFormComponent {
+export class UsersFormComponent {
   private users = inject(UsersService);
-  readonly matcher = new UserFormErrorStateMatcher();
+  private readonly fb = inject(NonNullableFormBuilder);
 
-  readonly userForm = new FormGroup({
-    uuid: new FormControl(''),
-    firstName: new FormControl('', [
-      Validators.required,
-      Validators.minLength(3),
-    ]),
-    lastName: new FormControl('', [
-      Validators.required,
-      Validators.minLength(3),
-    ]),
-    birthDayAt: new FormControl(null, [
-      Validators.required,
-      dateInRangeValidator({}),
-    ]),
+  readonly userForm = this.fb.group({
+    uuid: this.fb.control<string>(''),
+    firstName: this.fb.control<string>('', {
+      validators: [Validators.required, Validators.minLength(3)],
+    }),
+    lastName: this.fb.control<string>('', {
+      validators: [Validators.required, Validators.minLength(3)],
+    }),
+    birthDayAt: this.fb.control<Date>(new Date(), {
+      validators: [Validators.required, dateInRangeValidator({})],
+    }),
   });
 
   onSubmit(formDirective: FormGroupDirective) {

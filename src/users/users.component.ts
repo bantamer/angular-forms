@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
-import { UserFormComponent } from './users-form/user-form.component';
-import { UserTableComponent } from './users-table/user-table.component';
+import { UsersFormComponent } from './users-form/users-form.component';
+import { UsersTableComponent } from './users-table/users-table.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [UserFormComponent, UserTableComponent],
+  imports: [UsersFormComponent, UsersTableComponent],
   template: `
     <app-user-form />
     <app-user-table />
