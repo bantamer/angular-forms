@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import {
   Validators,
   ReactiveFormsModule,
@@ -14,10 +14,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { v4 as uuidv4 } from 'uuid';
 
 import { dateInRangeValidator } from './users-form-validators/date-in-range.validator';
-import { UsersService } from 'users/users-service/users.service';
 import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
 import { UsersFormInputErrorComponent } from './users-from-input-error/users-from-input-error.component';
 import { MatIcon } from '@angular/material/icon';
+import { User } from 'users/users-service';
 
 @Component({
   selector: 'app-user-form',
@@ -36,7 +36,8 @@ import { MatIcon } from '@angular/material/icon';
   templateUrl: './users-form.component.html',
 })
 export class UsersFormComponent {
-  private users = inject(UsersService);
+  @Output() submitEvent = new EventEmitter<User>();
+
   private readonly fb = inject(NonNullableFormBuilder);
 
   readonly userForm = this.fb.group({
@@ -53,7 +54,7 @@ export class UsersFormComponent {
   });
 
   onSubmit(formDirective: FormGroupDirective) {
-    this.users.addUser({
+    this.submitEvent.emit({
       uuid: uuidv4(),
       firstName: this.userForm.value['firstName'] ?? '',
       lastName: this.userForm.value['lastName'] ?? '',
