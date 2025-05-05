@@ -13,7 +13,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { v4 as uuidv4 } from 'uuid';
 
-import { DatePipe } from '@angular/common';
 import { dateInRangeValidator } from './users-form-validators/date-in-range.validator';
 import { UsersService } from 'users/users-service/users.service';
 import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
@@ -29,7 +28,6 @@ import { UsersFormInputErrorComponent } from './users-from-input-error/users-fro
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
-    DatePipe,
     UsersFormTextInputComponent,
     UsersFormInputErrorComponent,
   ],

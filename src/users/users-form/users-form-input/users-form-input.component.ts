@@ -5,7 +5,7 @@ import {
   FormGroupDirective,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatError, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { UsersFormInputErrorComponent } from 'users/users-form/users-from-input-error/users-from-input-error.component';
 
@@ -19,7 +19,13 @@ import { UsersFormInputErrorComponent } from 'users/users-form/users-from-input-
         [placeholder]="placeholder()"
         [formControlName]="controlName()"
       />
-      <app-users-form-input-error [control]="control()" />
+      <mat-error>
+        <app-users-form-input-error
+          [errors]="control().errors"
+          [isTouched]="control().touched"
+          [isDirty]="control().dirty"
+        />
+      </mat-error>
     </mat-form-field>
   `,
   standalone: true,
@@ -28,14 +34,15 @@ import { UsersFormInputErrorComponent } from 'users/users-form/users-from-input-
     MatInputModule,
     ReactiveFormsModule,
     UsersFormInputErrorComponent,
+    MatError,
   ],
   viewProviders: [
     { provide: ControlContainer, useExisting: FormGroupDirective },
   ],
 })
 export class UsersFormTextInputComponent {
-  controlName = input.required<string>();
-  control = input.required<FormControl>();
-  label = input.required<string>();
-  placeholder = input.required<string>();
+  readonly controlName = input.required<string>();
+  readonly control = input.required<FormControl>();
+  readonly label = input.required<string>();
+  readonly placeholder = input.required<string>();
 }

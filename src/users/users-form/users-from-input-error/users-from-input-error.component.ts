@@ -1,65 +1,44 @@
-import { Component, input } from '@angular/core';
-import {
-  FormControl,
-  ReactiveFormsModule,
-  ValidationErrors,
-} from '@angular/forms';
-import { MatError } from '@angular/material/form-field';
+import { DatePipe } from '@angular/common';
+import { Component, computed, input } from '@angular/core';
+import { ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 
 @Component({
   selector: 'app-users-form-input-error',
   standalone: true,
-  imports: [ReactiveFormsModule, MatError],
+  imports: [ReactiveFormsModule, DatePipe],
   template: `
-    @if (hasErrors && (hasTouched || hasDirty)) {
-      <ng-container>
-        @if (errors?.['required'] && !errors?.['matDatepickerParse']) {
-          <mat-error ngProjectAs="mat-error">This field is required.</mat-error>
+    @if (showErrors()) {
+      @switch (true) {
+        @case (!!errors()?.['required'] && !errors()?.['matDatepickerParse']) {
+          <ng-container>This field is required.</ng-container>
         }
-
-        @if (errors?.['minlength']) {
-          <mat-error ngProjectAs="mat-error">
-            Minimum length is {{ errors?.['minlength'].requiredLength }}.
-          </mat-error>
+        @case (!!errors()?.['minlength']) {
+          <ng-container>
+            Minimum length is {{ errors()?.['minlength'].requiredLength }}
+          </ng-container>
         }
-
-        @if (errors?.['maxlength']) {
-          <mat-error ngProjectAs="mat-error">
-            Maximum length is {{ errors?.['maxlength'].requiredLength }}.
-          </mat-error>
+        @case (!!errors()?.['dateOutOfRange']) {
+          <ng-container>
+            Date must be between
+            {{ errors()?.['dateOutOfRange'].minDate | date: 'MM/dd/yyyy' }} and
+            {{ errors()?.['dateOutOfRange'].maxDate | date: 'MM/dd/yyyy' }}
+          </ng-container>
         }
-
-        @if (errors?.['dateOutOfRange']) {
-          <mat-error ngProjectAs="mat-error"
-            >Date is out of valid range.</mat-error
-          >
+        @case (!!errors()?.['matDatepickerParse']) {
+          <ng-container>
+            Please enter a valid date in the MM/DD/YYYY format.
+          </ng-container>
         }
-
-        @if (errors?.['matDatepickerParse']) {
-          <mat-error ngProjectAs="mat-error"
-            >Please enter a valid date in the MM/DD/YYYY format.</mat-error
-          >
-        }
-      </ng-container>
+      }
     }
   `,
 })
 export class UsersFormInputErrorComponent {
-  control = input.required<FormControl>();
+  readonly errors = input<ValidationErrors | null | undefined>();
+  readonly isTouched = input<boolean | undefined>();
+  readonly isDirty = input<boolean | undefined>();
 
-  get errors(): ValidationErrors | null {
-    return this.control()?.errors ?? null;
-  }
-
-  get hasErrors(): boolean {
-    return !!this.errors;
-  }
-
-  get hasTouched(): boolean {
-    return this.control().touched;
-  }
-
-  get hasDirty(): boolean {
-    return this.control().dirty;
-  }
+  showErrors = computed(
+    () => !!this.errors() && (this.isTouched() || this.isDirty()),
+  );
 }

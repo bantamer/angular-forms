@@ -26,9 +26,15 @@
       formControlName="birthDayAt"
       placeholder="MM/DD/YYYY"
     />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-    <app-users-form-input-error [control]="userForm.controls.birthDayAt" />
+    <mat-datepicker-toggle matSuffix [for]="picker" />
+    <mat-datepicker #picker />
+    <mat-error>
+      <app-users-form-input-error
+        [errors]="userForm.controls.birthDayAt.errors"
+        [isTouched]="userForm.controls.birthDayAt.touched"
+        [isDirty]="userForm.controls.birthDayAt.dirty"
+      />
+    </mat-error>
   </mat-form-field>
   <button mat-raised-button type="submit" [disabled]="!userForm.valid">
     Submit
