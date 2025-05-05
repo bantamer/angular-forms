@@ -2,7 +2,7 @@
   [formGroup]="userForm"
   #formDirective="ngForm"
   (ngSubmit)="onSubmit(formDirective)"
-  class="flex p-4 gap-4"
+  class="flex flex-col md:flex-row p-4 gap-4"
 >
   <app-user-form-text-input
     class="flex-grow"
@@ -36,7 +36,7 @@
       />
     </mat-error>
   </mat-form-field>
-  <button mat-raised-button type="submit" [disabled]="!userForm.valid">
-    Submit
+  <button mat-fab type="submit" [disabled]="!userForm.valid">
+    <mat-icon fontIcon="add" />
   </button>
 </form>
