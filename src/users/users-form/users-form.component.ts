@@ -17,6 +17,7 @@ import { dateInRangeValidator } from './users-form-validators/date-in-range.vali
 import { UsersService } from 'users/users-service/users.service';
 import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
 import { UsersFormInputErrorComponent } from './users-from-input-error/users-from-input-error.component';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-user-form',
@@ -30,6 +31,7 @@ import { UsersFormInputErrorComponent } from './users-from-input-error/users-fro
     MatButtonModule,
     UsersFormTextInputComponent,
     UsersFormInputErrorComponent,
+    MatIcon,
   ],
   templateUrl: './users-form.component.html',
 })

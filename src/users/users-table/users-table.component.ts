@@ -10,6 +10,7 @@ import { sortDate } from './users-table-sort/sort-data';
 import { sortDefault } from './users-table-sort/sort-default';
 import { MatButtonModule } from '@angular/material/button';
 import { UsersService } from 'users/users-service';
+import { UsersTableColumn } from './users-table.types';
 
 const usersGridComparator = (data: User[], sort: MatSort) => {
   const isAsc = sort.direction === Order.Asc;
@@ -21,7 +22,7 @@ const usersGridComparator = (data: User[], sort: MatSort) => {
 
   const sortType = getSortType<UserField, User[]>(data, key);
 
-  return data.slice().sort((a, b) => {
+  return data.sort((a, b) => {
     switch (sortType) {
       case SortType.Date:
         return sortDate(a[key] as Date, b[key] as Date, isAsc);
@@ -41,10 +42,10 @@ export class UsersTableComponent {
   private users = inject(UsersService);
 
   displayedColumns: string[] = [
-    'actions',
-    UserField.FirstName,
-    UserField.LastName,
-    UserField.BirthDayAt,
+    UsersTableColumn.Actions,
+    UsersTableColumn.FirstName,
+    UsersTableColumn.LastName,
+    UsersTableColumn.BirthDayAt,
   ];
 
   readonly sort = viewChild(MatSort);
