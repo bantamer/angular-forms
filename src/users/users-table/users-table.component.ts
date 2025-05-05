@@ -1,13 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import { Component, computed, input, output, viewChild } from '@angular/core';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { User, UserField } from 'users/users-service/user';
@@ -46,12 +38,21 @@ const usersGridComparator = (data: User[], sort: MatSort) => {
   imports: [MatTableModule, MatSortModule, DatePipe, MatIcon, MatButtonModule],
   templateUrl: './users-table.component.html',
 })
-export class UsersTableComponent implements OnChanges {
-  @Input() users: User[] = [];
-  @ViewChild(MatSort) sort!: MatSort;
-  @Output() deleteUserEvent = new EventEmitter<string>();
+export class UsersTableComponent {
+  readonly users = input<User[]>();
+  readonly deleteUserEvent = output<string>();
 
-  public dataSource = new MatTableDataSource<User>([]);
+  readonly sort = viewChild(MatSort);
+
+  public dataSource = computed(() => {
+    const sort = this.sort();
+    const source = new MatTableDataSource<User>(this.users());
+
+    source.sort = sort ?? null;
+    source.sortData = usersGridComparator;
+
+    return source;
+  });
 
   displayedColumns: string[] = [
     UsersTableColumn.Actions,
@@ -59,20 +60,6 @@ export class UsersTableComponent implements OnChanges {
     UsersTableColumn.LastName,
     UsersTableColumn.BirthDayAt,
   ];
-
-  ngOnChanges(changes: SimpleChanges): void {
-    for (const propName in changes) {
-      if (Object.prototype.hasOwnProperty.call(changes, propName)) {
-        switch (propName) {
-          case 'users': {
-            this.dataSource.data = changes[propName].currentValue;
-            this.dataSource.sort = this.sort;
-            this.dataSource.sortData = usersGridComparator;
-          }
-        }
-      }
-    }
-  }
 
   onDelete(uuid: string) {
     this.deleteUserEvent.emit(uuid);

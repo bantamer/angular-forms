@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import {
   Validators,
   ReactiveFormsModule,
@@ -36,7 +36,7 @@ import { User } from 'users/users-service';
   templateUrl: './users-form.component.html',
 })
 export class UsersFormComponent {
-  @Output() submitEvent = new EventEmitter<User>();
+  readonly submitEvent = output<User>();
 
   private readonly fb = inject(NonNullableFormBuilder);
 
@@ -53,7 +53,7 @@ export class UsersFormComponent {
     }),
   });
 
-  onSubmit(formDirective: FormGroupDirective) {
+  onSubmit(formDirective: FormGroupDirective): void {
     this.submitEvent.emit({
       uuid: uuidv4(),
       firstName: this.userForm.value['firstName'] ?? '',
