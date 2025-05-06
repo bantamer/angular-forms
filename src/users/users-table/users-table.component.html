@@ -1,16 +1,18 @@
-<table mat-table [dataSource]="dataSource()" matSort class="p-4">
+@let users = (users$() | async) ?? [];
+
+<table mat-table [dataSource]="users" class="p-4">
   <ng-container matColumnDef="firstName">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
-    <td mat-cell *matCellDef="let element">{{ element.firstName }}</td>
+    <th mat-header-cell *matHeaderCellDef>First Name</th>
+    <td mat-cell *matCellDef="let user">{{ user.firstName }}</td>
   </ng-container>
   <ng-container matColumnDef="lastName">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
-    <td mat-cell *matCellDef="let element">{{ element.lastName }}</td>
+    <th mat-header-cell *matHeaderCellDef>Last Name</th>
+    <td mat-cell *matCellDef="let user">{{ user.lastName }}</td>
   </ng-container>
   <ng-container matColumnDef="birthDayAt">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Birth Day</th>
-    <td mat-cell *matCellDef="let element">
-      {{ element.birthDayAt | date: "MM/dd/yyyy" }}
+    <th mat-header-cell *matHeaderCellDef>Birth Day</th>
+    <td mat-cell *matCellDef="let user">
+      {{ user.birthDayAt | date: "MM/dd/yyyy" }}
     </td>
   </ng-container>
   <ng-container matColumnDef="actions">
@@ -22,6 +24,10 @@
         <mat-icon fontIcon="delete" />
       </button>
     </td>
+  </ng-container>
+  <ng-container matColumnDef="accountBalance">
+    <th mat-header-cell *matHeaderCellDef>Account Balance</th>
+    <td mat-cell *matCellDef="let user">{{ user.accountBalance }}</td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>

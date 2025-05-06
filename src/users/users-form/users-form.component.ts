@@ -59,6 +59,7 @@ export class UsersFormComponent {
       firstName: this.userForm.value['firstName'] ?? '',
       lastName: this.userForm.value['lastName'] ?? '',
       birthDayAt: this.userForm.value['birthDayAt'] ?? new Date(),
+      accountBalance: 0,
     });
 
     formDirective.resetForm();
