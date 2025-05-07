@@ -6,14 +6,14 @@ import { User } from './users-service';
 import {
   interval,
   map,
-  merge,
+  mergeMap,
   scan,
   startWith,
   Subject,
-  switchMap,
   takeWhile,
 } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-home',
@@ -30,30 +30,44 @@ import { AsyncPipe } from '@angular/common';
 export class HomeComponent {
   private userAdded$ = new Subject<User>();
   private userDeleted$ = new Subject<string>();
+  private deletedUserUuids = new Set<string>();
 
-  public users$ = merge(
-    this.userAdded$.asObservable(),
-    this.userDeleted$.asObservable(),
-  ).pipe(
-    scan((acc, event) => {
-      if (typeof event === 'string') {
-        return acc.filter((user) => user.uuid !== event);
-      }
-      return [...acc, event];
-    }, [] as User[]),
+  constructor() {
+    this.userDeleted$
+      .asObservable()
+      .pipe(takeUntilDestroyed())
+      .subscribe((uuid) => {
+        this.deletedUserUuids.add(uuid);
+      });
+  }
 
-    switchMap((users) =>
-      interval(1000).pipe(
+  public users$ = this.userAdded$.asObservable().pipe(
+    mergeMap((user) =>
+      interval(user.interval).pipe(
         startWith(0),
         map(() => {
-          return users.map(({ accountBalance, ...user }) => ({
+          return {
             ...user,
-            accountBalance: accountBalance + Math.floor(Math.random() * 10000),
-          }));
+            accountBalance: Math.floor(Math.random() * 10000),
+          };
         }),
-        takeWhile((users) => users.length > 0, true),
+        takeWhile((user) => !this.deletedUserUuids.has(user.uuid), true),
       ),
     ),
+    scan((users, user) => {
+      if (this.deletedUserUuids.has(user.uuid)) {
+        return users.filter(({ uuid }) => user.uuid !== uuid);
+      }
+      const index = users.findIndex((u) => u.uuid === user.uuid);
+
+      if (index > -1) {
+        const updated = [...users];
+        updated[index] = user;
+        return updated;
+      }
+
+      return [...users, user];
+    }, [] as User[]),
   );
 
   onUserSubmit(user: User) {

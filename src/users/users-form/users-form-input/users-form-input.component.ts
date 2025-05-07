@@ -45,4 +45,5 @@ export class UsersFormTextInputComponent {
   readonly control = input.required<FormControl>();
   readonly label = input.required<string>();
   readonly placeholder = input.required<string>();
+  readonly type = input<HTMLInputElement['type']>();
 }

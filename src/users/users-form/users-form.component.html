@@ -18,6 +18,14 @@
     placeholder="Doe"
     [control]="userForm.controls.lastName"
   />
+  <app-user-form-text-input
+    class="flex-grow"
+    type="number"
+    controlName="interval"
+    label="Interval"
+    placeholder="500"
+    [control]="userForm.controls.interval"
+  />
   <mat-form-field class="flex-grow">
     <mat-label>Birth Day</mat-label>
     <input
