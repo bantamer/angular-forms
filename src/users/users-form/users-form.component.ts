@@ -17,7 +17,7 @@ import { dateInRangeValidator } from './users-form-validators/date-in-range.vali
 import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
 import { UsersFormInputErrorComponent } from './users-from-input-error/users-from-input-error.component';
 import { MatIcon } from '@angular/material/icon';
-import { User } from 'users/users-service';
+import { User, UserField } from 'users/users-service';
 
 @Component({
   selector: 'app-user-form',
@@ -51,14 +51,17 @@ export class UsersFormComponent {
     birthDayAt: this.fb.control<Date>(new Date(), {
       validators: [Validators.required, dateInRangeValidator({})],
     }),
+    interval: this.fb.control<number>(500),
   });
 
   onSubmit(formDirective: FormGroupDirective): void {
     this.submitEvent.emit({
       uuid: uuidv4(),
-      firstName: this.userForm.value['firstName'] ?? '',
-      lastName: this.userForm.value['lastName'] ?? '',
-      birthDayAt: this.userForm.value['birthDayAt'] ?? new Date(),
+      firstName: this.userForm.value[UserField.FirstName] ?? '',
+      lastName: this.userForm.value[UserField.LastName] ?? '',
+      birthDayAt: this.userForm.value[UserField.BirthDayAt] ?? new Date(),
+      accountBalance: 0,
+      interval: this.userForm.value[UserField.Interval] ?? 500,
     });
 
     formDirective.resetForm();

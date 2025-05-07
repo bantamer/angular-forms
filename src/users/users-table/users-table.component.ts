@@ -1,16 +1,16 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, output, viewChild } from '@angular/core';
-import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { User, UserField } from 'users/users-service/user';
 import { MatIcon } from '@angular/material/icon';
-import { getSortType, SortType } from './users-table-sort/get-sort-type';
-import { Order } from './users-table-sort/types';
-import { sortDate } from './users-table-sort/sort-data';
-import { sortDefault } from './users-table-sort/sort-default';
 import { MatButtonModule } from '@angular/material/button';
 
 import { UsersTableColumn } from './users-table.types';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { getSortType, SortType } from './users-table-sort/get-sort-type';
+import { sortDate } from './users-table-sort/sort-data';
+import { sortDefault } from './users-table-sort/sort-default';
+import { Order } from './users-table-sort/types';
 
 const usersGridComparator = (data: User[], sort: MatSort) => {
   const isAsc = sort.direction === Order.Asc;
@@ -35,11 +35,11 @@ const usersGridComparator = (data: User[], sort: MatSort) => {
 @Component({
   selector: 'app-user-table',
   standalone: true,
-  imports: [MatTableModule, MatSortModule, DatePipe, MatIcon, MatButtonModule],
+  imports: [MatTableModule, MatIcon, MatButtonModule, MatSortModule, DatePipe],
   templateUrl: './users-table.component.html',
 })
 export class UsersTableComponent {
-  readonly users = input<User[]>();
+  readonly users = input.required<User[]>();
   readonly deleteUserEvent = output<string>();
 
   readonly sort = viewChild(MatSort);
@@ -59,6 +59,7 @@ export class UsersTableComponent {
     UsersTableColumn.FirstName,
     UsersTableColumn.LastName,
     UsersTableColumn.BirthDayAt,
+    UsersTableColumn.AccountBalance,
   ];
 
   onDelete(uuid: string) {
