@@ -5,6 +5,7 @@ export const UserField = {
   BirthDayAt: 'birthDayAt',
   AccountBalance: 'accountBalance',
   Interval: 'interval',
+  Deleted: 'deleted',
 } as const;
 
 export type UserField = (typeof UserField)[keyof typeof UserField];
@@ -16,4 +17,5 @@ export interface User {
   [UserField.BirthDayAt]: Date;
   [UserField.AccountBalance]: number;
   [UserField.Interval]: number;
+  [UserField.Deleted]: boolean;
 }
