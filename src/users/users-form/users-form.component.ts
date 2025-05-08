@@ -62,6 +62,7 @@ export class UsersFormComponent {
       birthDayAt: this.userForm.value[UserField.BirthDayAt] ?? new Date(),
       accountBalance: 0,
       interval: this.userForm.value[UserField.Interval] ?? 500,
+      deleted: false,
     });
 
     formDirective.resetForm();
