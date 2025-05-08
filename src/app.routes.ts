@@ -3,7 +3,33 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
+    redirectTo: 'users',
+  },
+  {
+    path: 'users',
     loadComponent: () =>
-      import('./users/users.component').then((m) => m.HomeComponent),
+      import('./users/users.page.component').then((m) => m.UsersPageComponent),
+  },
+  {
+    path: 'users/create',
+    loadComponent: () =>
+      import('./users/users-create.page.component').then(
+        (m) => m.UsersCreatePageComponent,
+      ),
+  },
+  {
+    path: 'users/:uuid',
+    loadComponent: () =>
+      import('./users/users-update.page.component').then(
+        (m) => m.UsersUpdatePageComponent,
+      ),
+  },
+  {
+    path: 'not-found',
+    loadComponent: () =>
+      import('./not-found/not-found.component').then(
+        (m) => m.NotFoundComponent,
+      ),
   },
 ];
