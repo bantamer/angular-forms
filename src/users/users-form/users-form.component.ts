@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import {
   Validators,
   ReactiveFormsModule,
@@ -15,6 +15,8 @@ import { dateInRangeValidator } from './users-form-validators/date-in-range.vali
 import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
 import { UsersFormInputErrorComponent } from './users-from-input-error/users-from-input-error.component';
 import { User } from 'users/users-service';
+import { outputFromObservable } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 
 export interface UserFormOutput {
   user: User;
@@ -37,13 +39,12 @@ export interface UserFormOutput {
   templateUrl: './users-form.component.html',
 })
 export class UsersFormComponent {
-  public userChangeEvent = output<UserFormOutput>();
-  public userFormInitialValues = input<User | undefined>();
+  public initialUserForm = input<User | undefined | null>();
   private readonly fb = inject(NonNullableFormBuilder);
 
   constructor() {
     effect(() => {
-      const user = this.userFormInitialValues();
+      const user = this.initialUserForm();
 
       if (user) {
         this.userForm.patchValue({
@@ -51,21 +52,6 @@ export class UsersFormComponent {
           birthDayAt: new Date(user.birthDayAt),
         });
       }
-    });
-
-    this.userForm.valueChanges.subscribe((formValue) => {
-      this.userChangeEvent.emit({
-        isValid: this.userForm.valid,
-        user: {
-          uuid: formValue.uuid!,
-          firstName: formValue.firstName ?? '',
-          lastName: formValue.lastName ?? '',
-          birthDayAt: formValue.birthDayAt ?? new Date(),
-          accountBalance: 0,
-          interval: formValue.interval ?? 500,
-          deleted: false,
-        },
-      });
     });
   }
 
@@ -82,4 +68,21 @@ export class UsersFormComponent {
     }),
     interval: this.fb.control<number>(500),
   });
+
+  readonly userChange = outputFromObservable<UserFormOutput>(
+    this.userForm.valueChanges.pipe(
+      map((formValue) => ({
+        isValid: this.userForm.valid,
+        user: {
+          uuid: formValue.uuid!,
+          firstName: formValue.firstName ?? '',
+          lastName: formValue.lastName ?? '',
+          birthDayAt: formValue.birthDayAt ?? new Date(),
+          accountBalance: 0,
+          interval: formValue.interval ?? 500,
+          deleted: false,
+        },
+      })),
+    ),
+  );
 }

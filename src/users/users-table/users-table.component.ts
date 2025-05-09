@@ -11,7 +11,7 @@ import { getSortType, SortType } from './users-table-sort/get-sort-type';
 import { sortDate } from './users-table-sort/sort-data';
 import { sortDefault } from './users-table-sort/sort-default';
 import { Order } from './users-table-sort/types';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 const usersGridComparator = (data: User[], sort: MatSort) => {
   const isAsc = sort.direction === Order.Asc;
@@ -36,7 +36,14 @@ const usersGridComparator = (data: User[], sort: MatSort) => {
 @Component({
   selector: 'app-user-table',
   standalone: true,
-  imports: [MatTableModule, MatIcon, MatButtonModule, MatSortModule, DatePipe],
+  imports: [
+    MatTableModule,
+    MatIcon,
+    MatButtonModule,
+    MatSortModule,
+    DatePipe,
+    RouterModule,
+  ],
   templateUrl: './users-table.component.html',
 })
 export class UsersTableComponent {

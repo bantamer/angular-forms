@@ -7,18 +7,19 @@ import {
   UsersFormComponent,
 } from 'users/users-form/users-form.component';
 import { User, UsersService } from './users-service';
-import { filter, map, switchMap, take } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-users-update-page',
   standalone: true,
-  imports: [UsersFormComponent, MatButtonModule],
+  imports: [UsersFormComponent, MatButtonModule, AsyncPipe],
   template: `
     <div class="flex flex-col items-center justify-center">
       <div class="max-w-[600px] w-full">
         <app-users-form
-          [userFormInitialValues]="user"
-          (userChangeEvent)="onUserChange($event)"
+          [initialUserForm]="userById$ | async"
+          (userChange)="onUserChange($event)"
         />
         <div class="flex gap-2">
           <button
@@ -39,21 +40,11 @@ export class UsersUpdatePageComponent {
   public isFormValid = false;
   private users = inject(UsersService);
   private router = inject(Router);
-
-  constructor() {
-    inject(ActivatedRoute)
-      .paramMap.pipe(
-        map((params) => params.get('uuid')),
-        filter((uuid): uuid is string => !!uuid),
-        switchMap((uuid) => this.users.getUser(uuid)),
-        take(1),
-      )
-      .subscribe((user) => {
-        console.log(user);
-
-        this.user = user;
-      });
-  }
+  public userById$ = inject(ActivatedRoute).paramMap.pipe(
+    map((params) => params.get('uuid')),
+    filter((uuid): uuid is string => !!uuid),
+    switchMap((uuid) => this.users.getUser(uuid)),
+  );
 
   onUserChange({ user, isValid }: UserFormOutput): void {
     this.user = user;
@@ -66,11 +57,7 @@ export class UsersUpdatePageComponent {
   }
 
   onDelete(): void {
-    const uuid = this.user?.uuid;
-
-    if (!uuid) {
-      return;
-    }
+    const uuid = this.user!.uuid;
 
     this.users.deleteUser(uuid);
     this.router.navigate(['/users']);

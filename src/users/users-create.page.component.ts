@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
   template: `
     <div class="flex flex-col items-center justify-center">
       <div class="max-w-[600px] w-full">
-        <app-users-form (userChangeEvent)="onUserChange($event)" />
+        <app-users-form (userChange)="onUserChange($event)" />
         <button
           mat-raised-button
           (click)="onSubmit()"

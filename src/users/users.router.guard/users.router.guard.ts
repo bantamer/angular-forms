@@ -5,6 +5,7 @@ import { UsersService } from 'users/users-service';
 
 export const userExistGuard: CanActivateFn = ({ paramMap }) => {
   const uuid = paramMap.get('uuid')!;
+
   const users = inject(UsersService);
   const redirectToNotFoundPath = new RedirectCommand(
     inject(Router).createUrlTree(['not-found']),

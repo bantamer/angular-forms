@@ -1,5 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+
 import { UsersService } from 'users/users-service';
 import { UsersTableComponent } from 'users/users-table/users-table.component';
 

@@ -14,10 +14,12 @@ import {
   startWith,
   Subject,
   switchMap,
+  take,
   takeUntil,
 } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-const transformToUserArray = (users: Map<string, User>, user: User) => {
+const applyUserState = (users: Map<string, User>, user: User) => {
   if (user.deleted) {
     users.delete(user.uuid);
   } else {
@@ -27,7 +29,7 @@ const transformToUserArray = (users: Map<string, User>, user: User) => {
   return users;
 };
 
-const updateUserAccountBalance =
+const getUserBalanceUpdate$ =
   (userDeleted$: Observable<string>) => (user: User) =>
     interval(user.interval).pipe(
       startWith(0),
@@ -59,20 +61,28 @@ export class UsersService {
     groupBy((user) => user.uuid),
     mergeMap((group$) =>
       group$.pipe(
-        switchMap(updateUserAccountBalance(this.userDeleted$.asObservable())),
+        switchMap(getUserBalanceUpdate$(this.userDeleted$.asObservable())),
       ),
     ),
-    scan(transformToUserArray, new Map<string, User>()),
+    scan(applyUserState, new Map<string, User>()),
     map((userMap) => Array.from(userMap.values())),
-    shareReplay(1),
+    shareReplay({ bufferSize: 1, refCount: true }),
+    startWith([]),
   );
+
+  constructor() {
+    this.users$.pipe(takeUntilDestroyed()).subscribe();
+  }
 
   getUsers$() {
     return this.users$;
   }
 
   getUser(uuid: string) {
-    return this.users$.pipe(map((users) => users.find((u) => u.uuid === uuid)));
+    return this.users$.pipe(
+      map((users) => users.find((u) => u.uuid === uuid)),
+      take(1),
+    );
   }
 
   addUser(user: User) {
