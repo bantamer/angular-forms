@@ -9,14 +9,41 @@ import {
   map,
   merge,
   mergeMap,
+  Observable,
   scan,
   startWith,
   Subject,
   switchMap,
   takeUntil,
-  tap,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+const transformToUserArray = (users: Map<string, User>, user: User) => {
+  if (user.deleted) {
+    users.delete(user.uuid);
+  } else {
+    users.set(user.uuid, user);
+  }
+
+  return users;
+};
+
+const updateUserAccountBalance =
+  (userDeleted$: Observable<string>) => (user: User) =>
+    interval(user.interval).pipe(
+      startWith(0),
+      map(() => {
+        return {
+          ...user,
+          accountBalance: Math.floor(Math.random() * 10000),
+        };
+      }),
+      takeUntil(userDeleted$.pipe(filter((uuid) => uuid === user.uuid))),
+      endWith({
+        ...user,
+        deleted: true,
+      }),
+    );
 
 @Injectable({
   providedIn: 'root',
@@ -26,9 +53,17 @@ export class UsersService {
   private userAdded$ = new Subject<User>();
   private userEdited$ = new Subject<User>();
   private userDeleted$ = new Subject<string>();
+  private usersChange$ = merge(
+    this.userAdded$.asObservable(),
+    this.userEdited$.asObservable(),
+  );
 
   constructor() {
-    this.initUsers().pipe(takeUntilDestroyed()).subscribe();
+    this.initUsers()
+      .pipe(takeUntilDestroyed())
+      .subscribe((users) => {
+        this.users$.next(users);
+      });
   }
 
   getUsers$() {
@@ -36,16 +71,7 @@ export class UsersService {
   }
 
   getUser(uuid: string) {
-    return this.users$.pipe(
-      map((users) => users.find((u) => u.uuid === uuid)!),
-    );
-  }
-
-  getUser$(uuid: string) {
-    return merge(
-      this.getUser(uuid),
-      this.userEdited$.pipe(switchMap(() => this.getUser(uuid))),
-    );
+    return this.users$.pipe(map((users) => users.find((u) => u.uuid === uuid)));
   }
 
   addUser(user: User) {
@@ -61,48 +87,15 @@ export class UsersService {
   }
 
   initUsers() {
-    return merge(
-      this.userAdded$.asObservable(),
-      this.userEdited$.asObservable(),
-    ).pipe(
+    return this.usersChange$.pipe(
       groupBy((user) => user.uuid),
       mergeMap((group$) =>
         group$.pipe(
-          switchMap((user) =>
-            interval(user.interval).pipe(
-              startWith(0),
-              map(() => ({
-                ...user,
-                accountBalance: Math.floor(Math.random() * 10000),
-              })),
-              takeUntil(
-                this.userDeleted$.pipe(filter((uuid) => uuid === user.uuid)),
-              ),
-              endWith({
-                ...user,
-                deleted: true,
-              }),
-            ),
-          ),
+          switchMap(updateUserAccountBalance(this.userDeleted$.asObservable())),
         ),
       ),
-      scan((users, user) => {
-        if (user.deleted) {
-          return users.filter(({ uuid }) => user.uuid !== uuid);
-        }
-
-        const index = users.findIndex((u) => u.uuid === user.uuid);
-        if (index > -1) {
-          users[index] = user;
-        } else {
-          users.push(user);
-        }
-
-        return [...users];
-      }, [] as User[]),
-      tap((users) => {
-        this.users$.next(users);
-      }),
+      scan(transformToUserArray, new Map<string, User>()),
+      map((userMap) => Array.from(userMap.values())),
     );
   }
 }

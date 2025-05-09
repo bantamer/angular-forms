@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { userExistGuard } from 'users/users.router.guard/users.router.guard';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,8 @@ export const routes: Routes = [
       import('./users/users-update.page.component').then(
         (m) => m.UsersUpdatePageComponent,
       ),
+
+    canActivate: [userExistGuard],
   },
   {
     path: 'not-found',
@@ -31,5 +34,10 @@ export const routes: Routes = [
       import('./not-found/not-found.component').then(
         (m) => m.NotFoundComponent,
       ),
+  },
+  {
+    path: '**',
+    pathMatch: 'full',
+    redirectTo: 'not-found',
   },
 ];

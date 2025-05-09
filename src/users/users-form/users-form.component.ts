@@ -1,8 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import {
   Validators,
   ReactiveFormsModule,
-  FormGroupDirective,
   NonNullableFormBuilder,
 } from '@angular/forms';
 
@@ -11,15 +10,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { v4 as uuidv4 } from 'uuid';
 
 import { dateInRangeValidator } from './users-form-validators/date-in-range.validator';
 import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
 import { UsersFormInputErrorComponent } from './users-from-input-error/users-from-input-error.component';
+import { User } from 'users/users-service';
 
-import { UserField, UsersService } from 'users/users-service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { filter, map, switchMap, take } from 'rxjs';
+export interface UserFormOutput {
+  user: User;
+  isValid: boolean;
+}
 
 @Component({
   selector: 'app-users-form',
@@ -37,35 +37,36 @@ import { filter, map, switchMap, take } from 'rxjs';
   templateUrl: './users-form.component.html',
 })
 export class UsersFormComponent {
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private users = inject(UsersService);
-  public isEditPage = false;
+  public userChangeEvent = output<UserFormOutput>();
+  public userFormInitialValues = input<User | undefined>();
   private readonly fb = inject(NonNullableFormBuilder);
 
   constructor() {
-    this.route.paramMap
-      .pipe(
-        map((params) => params.get('uuid')),
-        filter((uuid): uuid is string => !!uuid),
-        switchMap((uuid) => this.users.getUser(uuid)),
-        take(1),
-      )
-      .subscribe((user) => {
-        if (!user) {
-          this.router.navigate(['not-found']);
-          return;
-        }
+    effect(() => {
+      const user = this.userFormInitialValues();
 
-        this.isEditPage = true;
+      if (user) {
         this.userForm.patchValue({
-          uuid: user.uuid,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          ...user,
           birthDayAt: new Date(user.birthDayAt),
-          interval: user.interval,
         });
+      }
+    });
+
+    this.userForm.valueChanges.subscribe((formValue) => {
+      this.userChangeEvent.emit({
+        isValid: this.userForm.valid,
+        user: {
+          uuid: formValue.uuid!,
+          firstName: formValue.firstName ?? '',
+          lastName: formValue.lastName ?? '',
+          birthDayAt: formValue.birthDayAt ?? new Date(),
+          accountBalance: 0,
+          interval: formValue.interval ?? 500,
+          deleted: false,
+        },
       });
+    });
   }
 
   readonly userForm = this.fb.group({
@@ -81,32 +82,4 @@ export class UsersFormComponent {
     }),
     interval: this.fb.control<number>(500),
   });
-
-  onSubmit(formDirective: FormGroupDirective): void {
-    console.log(this.userForm.value[UserField.Uuid] ?? uuidv4());
-
-    this.users.addUser({
-      uuid: this.userForm.value[UserField.Uuid] ?? uuidv4(),
-      firstName: this.userForm.value[UserField.FirstName] ?? '',
-      lastName: this.userForm.value[UserField.LastName] ?? '',
-      birthDayAt: this.userForm.value[UserField.BirthDayAt] ?? new Date(),
-      accountBalance: 0,
-      interval: this.userForm.value[UserField.Interval] ?? 500,
-      deleted: false,
-    });
-
-    formDirective.resetForm();
-    this.userForm.reset();
-    this.router.navigate(['/users']);
-  }
-
-  onDelete(): void {
-    const uuid = this.userForm.value[UserField.Uuid];
-    if (!uuid) {
-      return;
-    }
-
-    this.users.deleteUser(uuid);
-    this.router.navigate(['/users']);
-  }
 }
