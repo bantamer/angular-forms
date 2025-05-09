@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from './user';
 import {
-  BehaviorSubject,
   endWith,
   filter,
   groupBy,
@@ -11,12 +10,12 @@ import {
   mergeMap,
   Observable,
   scan,
+  shareReplay,
   startWith,
   Subject,
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 const transformToUserArray = (users: Map<string, User>, user: User) => {
   if (user.deleted) {
@@ -49,7 +48,6 @@ const updateUserAccountBalance =
   providedIn: 'root',
 })
 export class UsersService {
-  private users$ = new BehaviorSubject<User[]>([]);
   private userAdded$ = new Subject<User>();
   private userEdited$ = new Subject<User>();
   private userDeleted$ = new Subject<string>();
@@ -57,17 +55,20 @@ export class UsersService {
     this.userAdded$.asObservable(),
     this.userEdited$.asObservable(),
   );
-
-  constructor() {
-    this.initUsers()
-      .pipe(takeUntilDestroyed())
-      .subscribe((users) => {
-        this.users$.next(users);
-      });
-  }
+  private users$ = this.usersChange$.pipe(
+    groupBy((user) => user.uuid),
+    mergeMap((group$) =>
+      group$.pipe(
+        switchMap(updateUserAccountBalance(this.userDeleted$.asObservable())),
+      ),
+    ),
+    scan(transformToUserArray, new Map<string, User>()),
+    map((userMap) => Array.from(userMap.values())),
+    shareReplay(1),
+  );
 
   getUsers$() {
-    return this.users$.asObservable();
+    return this.users$;
   }
 
   getUser(uuid: string) {
@@ -84,18 +85,5 @@ export class UsersService {
 
   deleteUser(uuid: string) {
     this.userDeleted$.next(uuid);
-  }
-
-  initUsers() {
-    return this.usersChange$.pipe(
-      groupBy((user) => user.uuid),
-      mergeMap((group$) =>
-        group$.pipe(
-          switchMap(updateUserAccountBalance(this.userDeleted$.asObservable())),
-        ),
-      ),
-      scan(transformToUserArray, new Map<string, User>()),
-      map((userMap) => Array.from(userMap.values())),
-    );
   }
 }
