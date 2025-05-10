@@ -70,6 +70,7 @@ module.exports = tseslint.config(
           patterns: ["../*"],
         },
       ],
+      "no-console": "error",
     },
   },
   {

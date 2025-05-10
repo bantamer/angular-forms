@@ -1,24 +1,19 @@
-<form
-  [formGroup]="userForm"
-  #formDirective="ngForm"
-  (ngSubmit)="onSubmit(formDirective)"
-  class="flex flex-col md:flex-row p-4 gap-4"
->
-  <app-user-form-text-input
+<form [formGroup]="userForm" class="flex flex-col gap-4">
+  <app-users-form-text-input
     class="flex-grow"
     controlName="firstName"
     label="First Name"
     placeholder="Jon"
     [control]="userForm.controls.firstName"
   />
-  <app-user-form-text-input
+  <app-users-form-text-input
     class="flex-grow"
     controlName="lastName"
     label="Last Name"
     placeholder="Doe"
     [control]="userForm.controls.lastName"
   />
-  <app-user-form-text-input
+  <app-users-form-text-input
     class="flex-grow"
     type="number"
     controlName="interval"
@@ -44,7 +39,4 @@
       />
     </mat-error>
   </mat-form-field>
-  <button mat-fab type="submit" [disabled]="!userForm.valid">
-    <mat-icon fontIcon="add" />
-  </button>
 </form>

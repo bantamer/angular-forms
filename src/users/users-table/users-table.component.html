@@ -18,8 +18,8 @@
       <span class="p-2"> <mat-icon fontIcon="apps" /></span>
     </th>
     <td mat-cell *matCellDef="let user">
-      <button mat-icon-button (click)="onDelete(user.uuid)">
-        <mat-icon fontIcon="delete" />
+      <button mat-icon-button [routerLink]="`/users/${user.uuid}`">
+        <mat-icon fontIcon="edit" />
       </button>
     </td>
   </ng-container>

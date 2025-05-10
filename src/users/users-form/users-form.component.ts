@@ -1,8 +1,7 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import {
   Validators,
   ReactiveFormsModule,
-  FormGroupDirective,
   NonNullableFormBuilder,
 } from '@angular/forms';
 
@@ -11,16 +10,21 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { v4 as uuidv4 } from 'uuid';
 
 import { dateInRangeValidator } from './users-form-validators/date-in-range.validator';
 import { UsersFormTextInputComponent } from './users-form-input/users-form-input.component';
 import { UsersFormInputErrorComponent } from './users-from-input-error/users-from-input-error.component';
-import { MatIcon } from '@angular/material/icon';
-import { User, UserField } from 'users/users-service';
+import { User } from 'users/users-service';
+import { outputFromObservable } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+
+export interface UserFormOutput {
+  user: User;
+  isValid: boolean;
+}
 
 @Component({
-  selector: 'app-user-form',
+  selector: 'app-users-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -31,17 +35,28 @@ import { User, UserField } from 'users/users-service';
     MatButtonModule,
     UsersFormTextInputComponent,
     UsersFormInputErrorComponent,
-    MatIcon,
   ],
   templateUrl: './users-form.component.html',
 })
 export class UsersFormComponent {
-  readonly submitEvent = output<User>();
-
+  public initialUserForm = input<User | undefined | null>();
   private readonly fb = inject(NonNullableFormBuilder);
 
+  constructor() {
+    effect(() => {
+      const user = this.initialUserForm();
+
+      if (user) {
+        this.userForm.patchValue({
+          ...user,
+          birthDayAt: new Date(user.birthDayAt),
+        });
+      }
+    });
+  }
+
   readonly userForm = this.fb.group({
-    uuid: this.fb.control<string>(''),
+    uuid: this.fb.control<string | undefined>(undefined),
     firstName: this.fb.control<string>('', {
       validators: [Validators.required, Validators.minLength(3)],
     }),
@@ -54,18 +69,20 @@ export class UsersFormComponent {
     interval: this.fb.control<number>(500),
   });
 
-  onSubmit(formDirective: FormGroupDirective): void {
-    this.submitEvent.emit({
-      uuid: uuidv4(),
-      firstName: this.userForm.value[UserField.FirstName] ?? '',
-      lastName: this.userForm.value[UserField.LastName] ?? '',
-      birthDayAt: this.userForm.value[UserField.BirthDayAt] ?? new Date(),
-      accountBalance: 0,
-      interval: this.userForm.value[UserField.Interval] ?? 500,
-      deleted: false,
-    });
-
-    formDirective.resetForm();
-    this.userForm.reset();
-  }
+  readonly userChange = outputFromObservable<UserFormOutput>(
+    this.userForm.valueChanges.pipe(
+      map((formValue) => ({
+        isValid: this.userForm.valid,
+        user: {
+          uuid: formValue.uuid!,
+          firstName: formValue.firstName ?? '',
+          lastName: formValue.lastName ?? '',
+          birthDayAt: formValue.birthDayAt ?? new Date(),
+          accountBalance: 0,
+          interval: formValue.interval ?? 500,
+          deleted: false,
+        },
+      })),
+    ),
+  );
 }

@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { UsersFormInputErrorComponent } from 'users/users-form/users-from-input-error/users-from-input-error.component';
 
 @Component({
-  selector: 'app-user-form-text-input',
+  selector: 'app-users-form-text-input',
   template: `
     <mat-form-field class="w-full">
       <mat-label>{{ label() }}</mat-label>

@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, input, output, viewChild } from '@angular/core';
+import { Component, computed, inject, input, viewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { User, UserField } from 'users/users-service/user';
 import { MatIcon } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { getSortType, SortType } from './users-table-sort/get-sort-type';
 import { sortDate } from './users-table-sort/sort-data';
 import { sortDefault } from './users-table-sort/sort-default';
 import { Order } from './users-table-sort/types';
+import { Router, RouterModule } from '@angular/router';
 
 const usersGridComparator = (data: User[], sort: MatSort) => {
   const isAsc = sort.direction === Order.Asc;
@@ -35,12 +36,19 @@ const usersGridComparator = (data: User[], sort: MatSort) => {
 @Component({
   selector: 'app-user-table',
   standalone: true,
-  imports: [MatTableModule, MatIcon, MatButtonModule, MatSortModule, DatePipe],
+  imports: [
+    MatTableModule,
+    MatIcon,
+    MatButtonModule,
+    MatSortModule,
+    DatePipe,
+    RouterModule,
+  ],
   templateUrl: './users-table.component.html',
 })
 export class UsersTableComponent {
+  private router = inject(Router);
   readonly users = input.required<User[]>();
-  readonly deleteUserEvent = output<string>();
 
   readonly sort = viewChild(MatSort);
 
@@ -62,7 +70,7 @@ export class UsersTableComponent {
     UsersTableColumn.AccountBalance,
   ];
 
-  onDelete(uuid: string) {
-    this.deleteUserEvent.emit(uuid);
+  onEditButtonClick(uuid: string): void {
+    this.router.navigate(['users', uuid]);
   }
 }
