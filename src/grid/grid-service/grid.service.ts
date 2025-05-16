@@ -1,73 +1,44 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { Sort, Strategy } from './grid-strategy';
 
-export const enum Order {
-  Asc = 'asc',
-  Desc = 'desc',
+export interface Column<T> {
+  key: keyof T;
+  label: string;
+  sortable?: boolean;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
-export class GridService<
-  DataSourceT,
-  ColumT extends keyof DataSourceT = keyof DataSourceT,
-> {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore FIXME: Remove after refactoring to externalize data and column input
-  public readonly columns = signal<ColumT[]>(['Name', 'Age', 'Role']);
-  private readonly originalData = signal<DataSourceT[]>([
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore FIXME: Remove after refactoring to externalize data and column input
-    { Name: 'Alice', Age: 30, Role: 'Admin' },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore FIXME: Remove after refactoring to externalize data and column input
-    { Name: 'Bob', Age: 25, Role: 'User' },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore FIXME: Remove after refactoring to externalize data and column input
-    { Name: 'Ken', Age: 35, Role: 'Guest' },
-  ]);
+@Injectable()
+export class GridService<T extends { id: unknown }> {
+  private dataSource = signal<T[]>([]);
+  private columns = signal<Column<T>[]>([]);
+  private strategy = inject(Strategy);
+  private currentSort = signal<Sort>(this.strategy.getInitialSort());
 
-  private readonly sortColumn = signal<ColumT | null>(null);
-  private readonly sortOrder = signal<Order>(Order.Asc);
+  readonly sorted = computed(() =>
+    this.strategy.getSortedData(this.currentSort(), this.dataSource() as T[]),
+  );
 
-  readonly data = computed(() => {
-    const col = this.sortColumn();
-
-    if (!col) {
-      return this.originalData();
-    }
-
-    const sorted = [...this.originalData()].sort((a, b) =>
-      a[col] > b[col] ? 1 : a[col] < b[col] ? -1 : 0,
-    );
-    return this.sortOrder() === Order.Asc ? sorted : sorted.reverse();
-  });
-
-  public sortBy(column: ColumT) {
-    if (this.sortColumn() === column) {
-      this.sortOrder.update((order) => {
-        switch (true) {
-          case order === Order.Asc: {
-            return Order.Desc;
-          }
-          case order === Order.Desc: {
-            return Order.Asc;
-          }
-          default:
-            return Order.Asc;
-        }
-      });
-    } else {
-      this.sortColumn.set(column);
-      this.sortOrder.set(Order.Asc);
-    }
+  public setData(data?: T[]) {
+    this.dataSource.set(data ?? []);
   }
 
-  public getSortOrderIsAsc = () => {
-    return this.sortOrder() === Order.Asc;
-  };
+  public getData() {
+    return this.sorted();
+  }
 
-  public getCurrentSortColumn = () => {
-    return this.sortColumn();
-  };
+  public setColumns(columns?: Column<T>[]) {
+    this.columns.set(columns ?? []);
+  }
+
+  public getColumns() {
+    return this.columns();
+  }
+
+  public onSortColumnClick(column: Column<T>) {
+    const sort = this.strategy.onSortColumnClick(
+      column as Column<{ id: unknown }>,
+    );
+
+    this.currentSort.set(sort);
+  }
 }
