@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 
-import { GridService } from './grid-service/grid.service';
+import { Column, GridService, WithId } from './grid-service/grid.service';
 import { GridHeaderRowComponent } from './grid-header-row/grid-header-row.component';
 import { GridRowComponent } from './grid-row/grid-row.component';
 
@@ -9,18 +9,21 @@ import { GridRowComponent } from './grid-row/grid-row.component';
   selector: 'table[app-grid]',
   standalone: true,
   imports: [GridHeaderRowComponent, GridRowComponent],
+  providers: [GridService],
   template: `
     <thead class="bg-gray-100">
       <tr app-header-row></tr>
     </thead>
     <tbody>
-      @for (item of grid.data(); track item.Name) {
+      @for (item of grid.getData(); track item.id) {
         <tr
           class="hover:bg-gray-100"
           app-row
           [row]="item"
-          [columns]="grid.columns()"
-        ></tr>
+          [columns]="grid.getColumns()"
+        >
+          <ng-content />
+        </tr>
       }
     </tbody>
   `,
@@ -33,6 +36,15 @@ import { GridRowComponent } from './grid-row/grid-row.component';
     `,
   ],
 })
-export class GridComponent {
-  protected grid = inject(GridService);
+export class GridComponent<DataSourceT extends WithId<object>> {
+  public grid = inject(GridService<DataSourceT>);
+  public data = input<DataSourceT[]>();
+  public columns = input<Column<DataSourceT>[]>();
+
+  constructor() {
+    effect(() => {
+      this.grid.setData(this.data());
+      this.grid.setColumns(this.columns());
+    });
+  }
 }
