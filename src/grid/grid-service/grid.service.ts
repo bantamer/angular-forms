@@ -34,6 +34,10 @@ export class GridService<T extends { id: unknown }> {
     return this.columns();
   }
 
+  public getCurrentSort$() {
+    return this.currentSort.asReadonly();
+  }
+
   public onSortColumnClick(column: Column<T>) {
     const sort = this.strategy.onSortColumnClick(
       column as Column<{ id: unknown }>,
