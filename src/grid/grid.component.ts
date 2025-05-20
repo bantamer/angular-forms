@@ -16,14 +16,13 @@ import { NgTemplateOutlet } from '@angular/common';
   selector: 'table[app-grid]',
   standalone: true,
   imports: [GridHeaderRowComponent, NgTemplateOutlet],
-  providers: [GridService],
   template: `
     <thead class="bg-gray-100">
       <tr app-header-row></tr>
     </thead>
     <tbody>
       @for (row of grid.getData(); track row.id) {
-        <tr class="hover:bg-gray-100">
+        <tr class="hover:bg-gray-100 *:px-4 *:py-1">
           @for (col of columns(); track col.key) {
             @if (getCell(col.key); as cell) {
               <ng-container

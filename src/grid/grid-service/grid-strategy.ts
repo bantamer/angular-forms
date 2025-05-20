@@ -13,26 +13,37 @@ export interface Sort {
   order?: Order;
 }
 
+export interface Pagination {
+  page?: number;
+  pageSize?: number;
+}
+
+export type QueryParams = Sort & Pagination;
+
 export abstract class IStrategy<T extends { id: unknown }> {
   abstract getSortedData(sort: Sort, data: T[]): T[];
   abstract getInitialSort(): Sort;
   abstract onSortColumnClick(column: Column<T>): Sort;
+  abstract getPagedData(pagination: Pagination, data: T[]): T[];
+  abstract getInitialPagination(): Pagination;
+  abstract nextPage(): Pagination;
+  abstract prevPage(): Pagination;
 }
 
 @Injectable()
 export class QueryStrategy<T extends { id: unknown }> implements IStrategy<T> {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private currentSort: Sort = this.route.snapshot.queryParams;
+  private currentQueryParams: QueryParams = this.route.snapshot.queryParams;
 
   constructor() {
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe((params) => {
-      this.currentSort = params;
+      this.currentQueryParams = params;
     });
   }
 
   getInitialSort(): Sort {
-    const { by, order } = this.currentSort;
+    const { by, order } = this.currentQueryParams;
 
     if (!by || !order) {
       this.router.navigate([], {
@@ -50,7 +61,7 @@ export class QueryStrategy<T extends { id: unknown }> implements IStrategy<T> {
   }
 
   onSortColumnClick(column: Column<T>): Sort {
-    const { by, order } = this.currentSort;
+    const { by, order } = this.currentQueryParams;
 
     const nextOrder =
       by !== column.key
@@ -104,6 +115,69 @@ export class QueryStrategy<T extends { id: unknown }> implements IStrategy<T> {
     });
 
     return order === Order.Desc ? sorted.reverse() : sorted;
+  }
+
+  getInitialPagination(): Pagination {
+    const { page, pageSize } = this.currentQueryParams;
+
+    if (!page || !pageSize) {
+      this.router.navigate([], {
+        queryParams: {
+          page: 1,
+          pageSize: 10,
+        },
+        queryParamsHandling: 'merge',
+      });
+
+      return { page: 1, pageSize: 10 };
+    }
+
+    return { page, pageSize };
+  }
+
+  getPagedData(pagination: Pagination, data: T[]): T[] {
+    const { page, pageSize } = pagination;
+
+    if (!page || !pageSize) {
+      return data;
+    }
+
+    const start = (page - 1) * pageSize;
+    const end = page * pageSize;
+
+    return data.slice(start, end);
+  }
+
+  nextPage(): Pagination {
+    const { page, pageSize } = this.currentQueryParams;
+
+    const nextPage = page ? +page + 1 : 1;
+
+    this.router.navigate([], {
+      queryParams: {
+        page: nextPage,
+        pageSize,
+      },
+      queryParamsHandling: 'merge',
+    });
+
+    return { page: nextPage, pageSize };
+  }
+
+  prevPage(): Pagination {
+    const { page, pageSize } = this.currentQueryParams;
+
+    const prevPage = page && page > 1 ? +page - 1 : 1;
+
+    this.router.navigate([], {
+      queryParams: {
+        page: prevPage,
+        pageSize,
+      },
+      queryParamsHandling: 'merge',
+    });
+
+    return { page: prevPage, pageSize };
   }
 }
 
