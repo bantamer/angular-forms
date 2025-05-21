@@ -13,12 +13,13 @@ import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
-  selector: 'table[app-grid]',
+  selector: 'table[appGrid]',
   standalone: true,
   imports: [GridHeaderRowComponent, NgTemplateOutlet],
+  providers: [GridService],
   template: `
     <thead class="bg-gray-100">
-      <tr app-header-row></tr>
+      <tr appGridHeaderRow></tr>
     </thead>
     <tbody>
       @for (row of grid.getData(); track row.id) {

@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { GridService } from 'grid/grid-service/grid.service';
+import { Component, input } from '@angular/core';
+import { GridPaginationDirective } from './grid-pagination.directive';
 
 @Component({
   selector: 'app-grid-pagination',
@@ -8,15 +8,15 @@ import { GridService } from 'grid/grid-service/grid.service';
     <div class="flex w-full gap-4 px-6 py-2 justify-end">
       <button
         class="px-4 py-2 cursor-pointer border rounded-2xl disabled:bg-gray-100 disabled:cursor-default"
-        (click)="grid.prevPage()"
-        [disabled]="!grid.getPaginationStatus()?.hasPrevPage"
+        (click)="pagination().prevPage()"
+        [disabled]="!pagination().getPaginationStatus()?.hasPrevPage"
       >
         Prev
       </button>
       <button
         class="px-4 py-2 cursor-pointer border rounded-2xl disabled:bg-gray-100 disabled:cursor-default"
-        (click)="grid.nextPage()"
-        [disabled]="!grid.getPaginationStatus()?.hasNextPage"
+        (click)="pagination().nextPage()"
+        [disabled]="!pagination().getPaginationStatus()?.hasNextPage"
       >
         Next
       </button>
@@ -24,5 +24,5 @@ import { GridService } from 'grid/grid-service/grid.service';
   `,
 })
 export class GridPaginationComponent {
-  protected grid = inject(GridService);
+  public pagination = input.required<GridPaginationDirective>();
 }

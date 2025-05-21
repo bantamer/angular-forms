@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Pagination, Sort, Strategy } from './grid-strategy';
+import { Pagination, Sort, Strategy } from 'grid/grid-strategy/grid-strategy';
 
 export interface Column<T> {
   key: keyof T;
@@ -42,7 +42,7 @@ export class GridService<T extends { id: unknown }> {
     return this.columns();
   }
 
-  public getCurrentSort$() {
+  public getCurrentSort() {
     return this.currentSort.asReadonly();
   }
 

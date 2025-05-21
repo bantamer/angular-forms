@@ -4,7 +4,7 @@ import { GridService } from 'grid/grid-service/grid.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
-  selector: 'tr[app-header-row]',
+  selector: 'tr[appGridHeaderRow]',
   standalone: true,
   imports: [GridHeaderSortLabelComponent],
   template: `

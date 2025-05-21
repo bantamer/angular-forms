@@ -1,34 +1,14 @@
-import { inject, Injectable, InjectionToken } from '@angular/core';
-import { Column } from './grid.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-export const enum Order {
-  Asc = 'asc',
-  Desc = 'desc',
-}
-
-export interface Sort {
-  by?: string;
-  order?: Order;
-}
-
-export interface Pagination {
-  page?: number;
-  pageSize?: number;
-}
-
-export type QueryParams = Sort & Pagination;
-
-export abstract class IStrategy<T extends { id: unknown }> {
-  abstract getSortedData(sort: Sort, data: T[]): T[];
-  abstract getInitialSort(): Sort;
-  abstract onSortColumnClick(column: Column<T>): Sort;
-  abstract getPagedData(pagination: Pagination, data: T[]): T[];
-  abstract getInitialPagination(): Pagination;
-  abstract nextPage(): Pagination;
-  abstract prevPage(): Pagination;
-}
+import { ActivatedRoute, Router } from '@angular/router';
+import { Column } from 'grid/grid-service/grid.service';
+import {
+  IStrategy,
+  QueryParams,
+  Sort,
+  Order,
+  Pagination,
+} from './grid-strategy';
 
 @Injectable()
 export class QueryStrategy<T extends { id: unknown }> implements IStrategy<T> {
@@ -180,11 +160,3 @@ export class QueryStrategy<T extends { id: unknown }> implements IStrategy<T> {
     return { page: prevPage, pageSize };
   }
 }
-
-export const Strategy = new InjectionToken<IStrategy<{ id: unknown }>>(
-  'strategy',
-  {
-    factory: () => new QueryStrategy(),
-    providedIn: 'root',
-  },
-);

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GridPaginationComponent } from './grid-pagination.component';
+import { CarsComponent } from './cars.component';
 
-describe('GridPaginationComponent', () => {
-  let component: GridPaginationComponent;
-  let fixture: ComponentFixture<GridPaginationComponent>;
+describe('CarsComponent', () => {
+  let component: CarsComponent;
+  let fixture: ComponentFixture<CarsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GridPaginationComponent],
+      imports: [CarsComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GridPaginationComponent);
+    fixture = TestBed.createComponent(CarsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -2,11 +2,13 @@ import { DatePipe } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { GridCellDirective } from 'grid/grid-cell/grid-cell.directive';
 import { GridPaginationComponent } from 'grid/grid-pagination/grid-pagination.component';
-import { QueryStrategy, Strategy } from 'grid/grid-service/grid-strategy';
+import { GridPaginationDirective } from 'grid/grid-pagination/grid-pagination.directive';
+import { Strategy } from 'grid/grid-strategy/grid-strategy';
 
-import { Column, GridService } from 'grid/grid-service/grid.service';
+import { Column } from 'grid/grid-service/grid.service';
 
 import { GridComponent } from 'grid/grid.component';
+import { QueryStrategy } from 'grid/grid-strategy/query-strategy';
 
 export interface User {
   id: number;
@@ -23,10 +25,17 @@ export interface User {
     GridComponent,
     GridCellDirective,
     DatePipe,
+    GridPaginationDirective,
     GridPaginationComponent,
   ],
   template: `
-    <table app-grid [data]="data()" [columns]="columns()">
+    <table
+      appGrid
+      appGridPagination
+      #pagination="pagination"
+      [data]="data()"
+      [columns]="columns()"
+    >
       <td *appCell="let row; key: 'name'">{{ row.name }}</td>
       <td *appCell="let row; key: 'age'">{{ row.age }}</td>
       <td *appCell="let row; key: 'role'">{{ row.role }}</td>
@@ -34,15 +43,9 @@ export interface User {
         {{ row.createdAt | date }}
       </td>
     </table>
-    <app-grid-pagination />
+    <app-grid-pagination [pagination]="pagination" />
   `,
-  providers: [
-    {
-      provide: GridService,
-      useFactory: () => new GridService<User>(),
-    },
-    { provide: Strategy, useClass: QueryStrategy },
-  ],
+  providers: [{ provide: Strategy, useClass: QueryStrategy }],
 })
 export class UsersComponent {
   public readonly columns = signal<Column<User>[]>([

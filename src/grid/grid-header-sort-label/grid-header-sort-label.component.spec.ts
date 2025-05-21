@@ -8,9 +8,8 @@ describe('GridHeaderSortLabelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GridHeaderSortLabelComponent]
-    })
-    .compileComponents();
+      imports: [GridHeaderSortLabelComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(GridHeaderSortLabelComponent);
     component = fixture.componentInstance;

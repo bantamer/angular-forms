@@ -1,6 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { Order } from 'grid/grid-service/grid-strategy';
+
 import { Column, GridService } from 'grid/grid-service/grid.service';
+import { Order } from 'grid/grid-strategy/grid-strategy';
 
 @Component({
   selector: 'app-grid-header-sort-label',
@@ -16,7 +17,7 @@ import { Column, GridService } from 'grid/grid-service/grid.service';
 export class GridHeaderSortLabelComponent<T extends { id: unknown }> {
   private grid = inject(GridService);
   public column = input<Column<T>>();
-  private currentSort = this.grid.getCurrentSort$();
+  private currentSort = this.grid.getCurrentSort();
 
   public currentOrderIcon = computed(() => {
     if (this.column()?.key !== this.currentSort().by) {
