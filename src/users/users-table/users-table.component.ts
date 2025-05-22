@@ -48,14 +48,14 @@ export class UsersTableComponent {
     UsersTableColumn.BirthDayAt,
   ];
 
-  readonly sort = viewChild(MatSort);
+  readonly sort = viewChild<MatSort>(MatSort);
 
   public dataSource = computed(() => {
     const users = this.users.getUsersSignal();
     const sort = this.sort();
     const source = new MatTableDataSource<User>(users());
 
-    source.sort = sort ?? null;
+    source.sort = sort!;
     source.sortData = usersGridComparator;
 
     return source;
