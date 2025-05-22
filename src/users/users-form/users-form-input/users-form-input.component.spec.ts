@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UsersFormTextInputComponent } from './users-form-input.component';
@@ -18,9 +18,11 @@ import { UsersFormTextInputComponent } from './users-form-input.component';
   imports: [UsersFormTextInputComponent, ReactiveFormsModule],
 })
 class TestHostComponent {
-  form = new FormGroup({
+  public form = new FormGroup({
     firstName: new FormControl(''),
   });
+
+  public inputComponent = viewChild(UsersFormTextInputComponent);
 }
 
 describe(UsersFormTextInputComponent.name, () => {
@@ -36,8 +38,8 @@ describe(UsersFormTextInputComponent.name, () => {
   });
 
   it('should render input with correct placeholder', () => {
-    const input: HTMLInputElement =
-      fixture.nativeElement.querySelector('input');
-    expect(input.placeholder).toBe('Enter your name');
+    expect(fixture.componentInstance.inputComponent()?.placeholder()).toBe(
+      'Enter your name',
+    );
   });
 });

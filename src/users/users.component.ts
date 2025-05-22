@@ -4,7 +4,7 @@ import { UsersFormComponent } from './users-form/users-form.component';
 import { UsersTableComponent } from './users-table/users-table.component';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-users',
   standalone: true,
   imports: [UsersFormComponent, UsersTableComponent],
   template: `
@@ -12,4 +12,4 @@ import { UsersTableComponent } from './users-table/users-table.component';
     <app-user-table />
   `,
 })
-export class HomeComponent {}
+export class UsersComponent {}

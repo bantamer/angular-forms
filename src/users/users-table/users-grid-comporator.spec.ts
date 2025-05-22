@@ -29,6 +29,15 @@ describe('usersGridComparator', () => {
     expect(originalData).toEqual([]);
   });
 
+  it('should return an array sorted by firstName in ascending order', () => {
+    const sorted = usersGridComparator(mockData, {
+      direction: Order.Asc,
+      active: UserField.FirstName,
+    } as MatSort);
+
+    expect(sorted[0][UserField.FirstName]).toEqual('Aaa');
+  });
+
   it('should return an array sorted by firstName in descending order', () => {
     const sorted = usersGridComparator(mockData, {
       direction: Order.Desc,
@@ -36,6 +45,15 @@ describe('usersGridComparator', () => {
     } as MatSort);
 
     expect(sorted[0][UserField.FirstName]).toEqual('Bbb');
+  });
+
+  it('should return an array sorted by birthDayAt in ascending order', () => {
+    const sorted = usersGridComparator(mockData, {
+      direction: Order.Asc,
+      active: UserField.BirthDayAt,
+    } as MatSort);
+
+    expect(sorted[0][UserField.BirthDayAt]).toEqual(new Date('2000-01-01'));
   });
 
   it('should return an array sorted by birthDayAt in descending order', () => {
