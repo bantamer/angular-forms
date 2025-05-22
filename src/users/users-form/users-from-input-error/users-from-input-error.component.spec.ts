@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UsersFormInputErrorComponent } from './users-from-input-error.component';
 
-describe('UsersFormInputErrorComponent', () => {
+describe(UsersFormInputErrorComponent.name, () => {
   let component: UsersFormInputErrorComponent;
   let fixture: ComponentFixture<UsersFormInputErrorComponent>;
 

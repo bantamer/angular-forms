@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { UsersService } from 'users/users-service';
 import { UsersTableColumn } from './users-table.types';
 
-const usersGridComparator = (data: User[], sort: MatSort) => {
+export const usersGridComparator = (data: User[], sort: MatSort) => {
   const isAsc = sort.direction === Order.Asc;
   const key = sort.active as UserField;
 
@@ -48,14 +48,14 @@ export class UsersTableComponent {
     UsersTableColumn.BirthDayAt,
   ];
 
-  readonly sort = viewChild(MatSort);
+  readonly sort = viewChild<MatSort>(MatSort);
 
   public dataSource = computed(() => {
     const users = this.users.getUsersSignal();
     const sort = this.sort();
     const source = new MatTableDataSource<User>(users());
 
-    source.sort = sort ?? null;
+    source.sort = sort!;
     source.sortData = usersGridComparator;
 
     return source;
