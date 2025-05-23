@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UsersComponent } from './users.component';
+import { provideActivatedRouteMock } from 'grid/grid-strategy/query-strategy.mock';
 
 describe('UsersComponent', () => {
   let component: UsersComponent;
@@ -9,6 +10,7 @@ describe('UsersComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [UsersComponent],
+      providers: [provideActivatedRouteMock()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UsersComponent);

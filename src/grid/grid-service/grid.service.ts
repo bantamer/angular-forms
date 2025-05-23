@@ -1,5 +1,17 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { Pagination, Sort, Strategy } from 'grid/grid-strategy/grid-strategy';
+import {
+  computed,
+  inject,
+  Injectable,
+  Provider,
+  Signal,
+  signal,
+} from '@angular/core';
+import {
+  IStrategy,
+  Pagination,
+  Sort,
+  Strategy,
+} from 'grid/grid-strategy/grid-strategy';
 
 export interface Column<T> {
   key: keyof T;
@@ -8,10 +20,12 @@ export interface Column<T> {
 }
 
 @Injectable()
-export class GridService<T extends { id: unknown }> {
+export class GridServiceImplementation<T extends { id: unknown }>
+  implements GridService<T>
+{
   private dataSource = signal<T[]>([]);
   private columns = signal<Column<T>[]>([]);
-  private strategy = inject(Strategy);
+  private strategy = inject(Strategy) as IStrategy<T>;
   private currentSort = signal<Sort>(this.strategy.getInitialSort());
   private currentPagination = signal<Pagination>(
     this.strategy.getInitialPagination(),
@@ -78,4 +92,32 @@ export class GridService<T extends { id: unknown }> {
 
     this.currentPagination.set(pagination);
   }
+
+  public getCurrentPagination() {
+    return this.currentPagination.asReadonly();
+  }
 }
+
+export abstract class GridService<T extends { id: unknown }> {
+  abstract setData(data?: T[]): void;
+  abstract getData(): T[];
+  abstract setColumns(columns?: Column<T>[]): void;
+  abstract getColumns(): Column<T>[];
+  abstract getCurrentSort(): Signal<Sort>;
+  abstract onSortColumnClick(column: Column<T>): void;
+  abstract getPaginationStatus():
+    | {
+        totalPages: number;
+        hasPrevPage: boolean;
+        hasNextPage: boolean;
+      }
+    | undefined;
+  abstract nextPage(): void;
+  abstract prevPage(): void;
+  abstract getCurrentPagination(): Signal<Pagination>;
+}
+
+export const provideGridService = (): Provider => ({
+  provide: GridService,
+  useClass: GridServiceImplementation,
+});
