@@ -6,7 +6,11 @@ import {
   input,
 } from '@angular/core';
 
-import { Column, GridService } from './grid-service/grid.service';
+import {
+  Column,
+  GridService,
+  provideGridService,
+} from './grid-service/grid.service';
 import { GridHeaderRowComponent } from './grid-header-row/grid-header-row.component';
 import { GridCellDirective } from './grid-cell/grid-cell.directive';
 import { NgTemplateOutlet } from '@angular/common';
@@ -16,7 +20,7 @@ import { NgTemplateOutlet } from '@angular/common';
   selector: 'table[appGrid]',
   standalone: true,
   imports: [GridHeaderRowComponent, NgTemplateOutlet],
-  providers: [GridService],
+  providers: [provideGridService()],
   template: `
     <thead class="bg-gray-100">
       <tr appGridHeaderRow></tr>
